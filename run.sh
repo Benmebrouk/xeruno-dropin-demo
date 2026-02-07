@@ -1,39 +1,38 @@
 #!/bin/bash
-# Quick start script for AgentAgentique drop-in demo
+# Quick start script for Xeruno drop-in demo
 
 set -e
 
-echo "🚀 Starting AgentAgentique..."
+echo "🚀 Starting Xeruno..."
 
-# Check if Ollama is running
+
+# 1. Check prerequisites
+for cmd in curl python3 ollama; do
+    if ! command -v $cmd &> /dev/null; then
+        echo "❌ Error: '$cmd' is required but not installed."
+        exit 1
+    fi
+done
+
+# 2. Install Python dependencies
+if [ -f "requirements.txt" ]; then
+    echo "📦 Checking Python dependencies..."
+    pip install -r requirements.txt > /dev/null 2>&1 || pip3 install -r requirements.txt > /dev/null 2>&1
+fi
+
+# 3. Check/Start Ollama
 if ! curl -s http://127.0.0.1:11434/api/tags > /dev/null 2>&1; then
-    echo "❌ Ollama not running. Starting..."
+    echo "⚙️  Ollama not running. Starting background service..."
     ollama serve > /dev/null 2>&1 &
     sleep 5
 fi
 
-# Pull required model if not present
-if ! ollama list | grep -q "llama3"; then
-    echo "📥 Pulling llama3 model..."
+# 4. Pull model if missing
+if ! curl -s http://127.0.0.1:11434/api/tags | grep -q "llama3"; then
+    echo "📥 Pulling llama3 model (this may take a while)..."
     ollama pull llama3
 fi
 
-# Start AgentAgentique API
-if ! curl -s http://127.0.0.1:3000/health > /dev/null 2>&1; then
-    echo "🔧 Starting AgentAgentique API..."
-    cd ..
-    cargo run -p agent-api --release > /tmp/agent-api.log 2>&1 &
-
-    # Wait for API to be ready
-    echo "⏳ Waiting for API..."
-    for i in {1..30}; do
-        if curl -s http://127.0.0.1:3000/health > /dev/null 2>&1; then
-            echo "✅ AgentAgentique ready!"
-            break
-        fi
-        sleep 1
-    done
-fi
-
+echo "✅ Xeruno (Ollama) is ready on http://127.0.0.1:11434"
 echo ""
 echo "🎯 Ready! Run: python demo.py"

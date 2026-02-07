@@ -2,7 +2,7 @@
 """
 Drop-in OpenAI Replacement Demo
 
-Shows identical code running with OpenAI vs AgentAgentique.
+Shows identical code running with OpenAI vs Xeruno.
 Only 2 lines changed.
 """
 
@@ -53,14 +53,15 @@ def run_openai():
 
     return {"tokens": tokens, "latency": latency, "cost": cost}
 
-def run_agentagentique():
-    """AgentAgentique - ONLY 2 LINES CHANGED"""
-    print(f"\n{GREEN}{BOLD}=== AgentAgentique (Local) ==={RESET}")
+def run_Xeruno():
+    """Xeruno - ONLY 2 LINES CHANGED"""
+    print(f"\n{GREEN}{BOLD}=== Xeruno (Local) ==={RESET}")
 
     # ✨ ONLY CHANGE: base_url + api_key
+    # This is the only code change needed to swap OpenAI -> Xeruno
     client = OpenAI(
-        base_url="http://127.0.0.1:3000/v1",
-        api_key="local"
+        base_url="http://127.0.0.1:11434/v1",
+        api_key="xeruno"
     )
 
     start = time.time()
@@ -96,11 +97,11 @@ def main():
     # Run OpenAI (if API key set)
     openai_stats = run_openai()
 
-    # Run AgentAgentique
+    # Run Xeruno
     try:
-        local_stats = run_agentagentique()
+        local_stats = run_Xeruno()
     except Exception as e:
-        print(f"\n{YELLOW}❌ AgentAgentique not running: {e}{RESET}")
+        print(f"\n{YELLOW}❌ Xeruno not running: {e}{RESET}")
         print(f"{YELLOW}   Run ./run.sh to start it{RESET}\n")
         return
 
